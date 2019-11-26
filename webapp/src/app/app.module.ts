@@ -17,6 +17,7 @@ import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   imports: [
+    AppRoutingModule,
     JoyrideModule.forRoot(),
     BrowserModule,
     CoreModule.forRoot(),
@@ -24,7 +25,6 @@ import { AppRoutingModule } from './app-routing.module';
     AuthModule,
     ConfigureModule,
     UserModule,
-    AppRoutingModule
   ],
   declarations: [ AppComponent, HomeComponent ],
   bootstrap: [ AppComponent ],

@@ -9,10 +9,10 @@ import { LogoutComponent } from './logout.component';
 import { AuthGuard } from '../auth/auth-guard.service';
 
 const routes: Routes = [
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login/callback', component: LoginCallbackComponent },
   { path: 'login', component: LoginOpenIDComponent },
   { path: 'logout', canActivate: [AuthGuard], component: LogoutComponent },
-  //{ path: '', redirectTo: '/wps/home', pathMatch: 'full' },
 ];
 
 @NgModule({
