@@ -8,8 +8,10 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        container(name: 'buildkit', shell: '/bin/sh')
-        sh 'echo "HELLO"'
+        container(name: 'buildkit', shell: '/bin/sh') {
+          sh 'echo "hello"'
+        }
+
       }
     }
 
