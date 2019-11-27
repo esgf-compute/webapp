@@ -22,9 +22,9 @@ pipeline {
       }
     }
 
-    stage('') {
+    stage('Notify') {
       steps {
-        slackSend(message: 'Test')
+        slackSend(message: 'Test ${currentBuild.result}')
       }
     }
 
