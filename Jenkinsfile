@@ -7,20 +7,18 @@ pipeline {
   }
   stages {
     stage('Build') {
-      environment {
-        JHOME = sh(script: 'ls -la', , returnStatus: true)
-      }
-      steps {
-        sh 'echo "${JHOME}"'
-      }
-    }
+      agent {
+        node {
+          label 'jenkins-buildkit'
+        }
 
-    stage('Optional') {
-      when {
-        environment name: 'JHOME', value: '1'
       }
       steps {
-        sh 'echo "hello"'
+        sh '''buildctl-daemonless.sh build \\
+  --frontend=dockerfile.v0 \\
+  --local context=${PWD} \\
+  --local dockerfile=${PWD} \\
+  --output type=image,name=${OUTPUT_REGISTRY}/webapp:${GIT_COMMIT:0:8},push=true'''
       }
     }
 
