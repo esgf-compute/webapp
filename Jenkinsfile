@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Build') {
       environment {
-        JHOME = sh(script: 'ls -la', , returnStatus: true).trim()
+        JHOME = sh(script: 'ls -la', , returnStatus: true)
       }
       steps {
         sh 'echo "${JHOME}"'
