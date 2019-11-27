@@ -14,7 +14,9 @@ pipeline {
   --frontend dockerfile.v0 \\
   --local context=${PWD} \\
   --local dockerfile=${PWD} \\
-  --output type=image,name=${OUTPUT_REGISTRY}/compute-webapp:${GIT_COMMIT:0:8},push=true'''
+  --output type=image,name=${OUTPUT_REGISTRY}/compute-webapp:${GIT_COMMIT:0:8},push=true \\
+  --export-cache type=registry,ref=${OUTPUT_REGISTRY}/compute-webapp:cache \\
+  --import-cache type=registry,ref=${OUTPUT_REGISTRY}/compute-webapp:cache'''
         }
 
       }
