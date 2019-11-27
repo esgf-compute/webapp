@@ -22,18 +22,5 @@ pipeline {
       }
     }
 
-    stage('Notify') {
-      agent {
-        node {
-          label 'jenkins-base'
-        }
-
-      }
-      steps {
-        sh 'export'
-        slackSend()
-      }
-    }
-
   }
 }
