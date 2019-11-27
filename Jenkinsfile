@@ -24,7 +24,7 @@ pipeline {
 
     stage('Notify') {
       steps {
-        slackSend(message: 'Test env.currentBuild.result')
+        slackSend(message: '"Test ${currentBuild.result}"')
       }
     }
 
