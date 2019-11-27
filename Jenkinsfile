@@ -9,10 +9,14 @@ pipeline {
     stage('Build') {
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
-          sh '''buildctl-daemonless.sh build \\
+          sh '''echo ${GIT_COMMIT}
+echo ${GIT_COMMIT:0:6}
+
+buildctl-daemonless.sh build \\
   --frontend dockerfile.v0 \\
   --local context=${PWD} \\
-  --local dockerfile=${PWD}'''
+  --local dockerfile=${PWD} \\
+  --output type=image,name=${OUTPUT_REGISTRY}/compute-webapp:latest'''
         }
 
       }
