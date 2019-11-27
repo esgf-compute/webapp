@@ -22,5 +22,11 @@ pipeline {
       }
     }
 
+    stage('Notify') {
+      steps {
+        sh 'export'
+      }
+    }
+
   }
 }
