@@ -15,5 +15,14 @@ pipeline {
       }
     }
 
+    stage('Optional') {
+      when {
+        environment name: 'JHOME', value: '1'
+      }
+      steps {
+        sh 'echo "hello"'
+      }
+    }
+
   }
 }
