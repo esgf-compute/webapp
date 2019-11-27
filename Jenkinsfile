@@ -9,7 +9,7 @@ pipeline {
     stage('Build') {
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
-          sh 'buildctl-daemonless.sh --help'
+          sh 'buildctl-daemonless.sh build --help'
         }
 
       }
