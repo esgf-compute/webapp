@@ -1,10 +1,5 @@
 pipeline {
-  agent {
-    node {
-      label 'jenkins-worker-builder'
-    }
-
-  }
+  agent none
   stages {
     stage('Build') {
       agent {
