@@ -9,16 +9,22 @@ pipeline {
     stage('Build') {
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
-          sh '''echo ${GIT_COMMIT}
-echo ${GIT_COMMIT:0:6}
-
-buildctl-daemonless.sh build \\
+          catchError() {
+            sh '''buildctl-daemonless.sh build \\
   --frontend dockerfile.v0 \\
   --local context=${PWD} \\
   --local dockerfile=${PWD} \\
   --output type=image,name=${OUTPUT_REGISTRY}/compute-webapp:${GIT_COMMIT:0:8},push=true'''
+          }
+
         }
 
+      }
+    }
+
+    stage('') {
+      steps {
+        slackSend(message: 'Test')
       }
     }
 
