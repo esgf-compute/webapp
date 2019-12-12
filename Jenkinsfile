@@ -57,9 +57,9 @@ helm ${KUBECONFIG} dependency update compute/
 
 conda install -c conda-forge ruamel.yaml
 
-python scripts/update_config.py configs/development.yaml webapp ${GIT_COMMIT:0:8}
+python scripts/update_config.py configs/development.yaml nginx ${GIT_COMMIT:0:8}
 
-python scripts/update_config.py configs/production-ci.yaml webapp ${GIT_COMMIT:0:8}
+python scripts/update_config.py configs/production-ci.yaml nginx ${GIT_COMMIT:0:8}
 
 helm ${KUBECONFIG} upgrade ${DEV_RELEASE_NAME} compute/ --reuse-values --set nginx.imageTag=${GIT_COMMIT:0:8} --wait --timeout 300
 
