@@ -8,8 +8,7 @@ export class ConfigService {
   esgfURL = 'https://esgf.llnl.gov';
   cogURL = 'https://esgf-node.llnl.gov/search/esgf-llnl';
   apiURL = 'https://github.com/ESGF/esgf-compute-api';
-  basePath = '/';
-  //basePath = '/wps/home';
+  basePath = '';
   
   // WebApp paths
   loginPath = `${this.basePath}/auth/login`;
@@ -18,7 +17,7 @@ export class ConfigService {
   userJobPath = `${this.basePath}/user/jobs`;
   configurePath = `${this.basePath}/configure`;
 
-  serverPath = '';
+  serverPath = 'https://nimbus16.llnl.gov:8443';
 
   // WPS entrypoint
   wpsPath = `${this.serverPath}/wps/`;

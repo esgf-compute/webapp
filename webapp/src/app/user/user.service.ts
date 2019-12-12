@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Http, URLSearchParams } from '@angular/http';
+import { Http, URLSearchParams, Headers } from '@angular/http';
 
 import { WPSService, WPSResponse } from '../core/wps.service';
 import { Job, Status, Message } from './job';
 import { ConfigService } from '../core/config.service';
+import { AuthService } from '../core/auth.service';
 
 export class User {
   constructor(
@@ -38,7 +39,8 @@ export class UserService extends WPSService {
 
   constructor(
     http: Http,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private authService: AuthService
   ) { 
     super(http); 
   }
@@ -55,7 +57,11 @@ export class UserService extends WPSService {
     let promises = target.statusUrls.map((url: string) => {
       url = this.fixHttpUrl(url);
 
-      return this.get(url)
+      let headers = new Headers();
+
+      headers.append('COMPUTE-TOKEN', this.authService.user.api_key);
+
+      return this.get(url, null, headers)
         .then((data: any) => {
           return new Status(data);
         });
@@ -76,7 +82,11 @@ export class UserService extends WPSService {
   }
 
   queryJobHistory(url: string, params: any = {}): Promise<Job[]> {
-    return this.get(url, params)
+    let headers = new Headers();
+
+    headers.append('COMPUTE-TOKEN', this.authService.user.api_key);
+
+    return this.get(url, params, headers)
       .then((data: any) => {
         this.count = data.count;
         (data.next === null) ? this.next = null : this.next = this.fixHttpUrl(data.next);
@@ -113,14 +123,20 @@ export class UserService extends WPSService {
 
   removeAll() {
     let url = `${this.configService.jobsPath}remove_all/`;
+    let headers = new Headers();
 
-    return this.delete(url);
+    headers.append('COMPUTE-TOKEN', this.authService.user.api_key);
+
+    return this.delete(url, headers);
   }
 
   deleteJob(target: Job): Promise<any> {
     let url = `${this.configService.jobsPath}${target.id}/`;
+    let headers = new Headers();
 
-    return this.delete(url);
+    headers.append('COMPUTE-TOKEN', this.authService.user.api_key);
+
+    return this.delete(url, headers);
   }
 
   update(user: User): Promise<WPSResponse> {
