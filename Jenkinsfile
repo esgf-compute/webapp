@@ -39,12 +39,6 @@ pipeline {
         container(name: 'helm', shell: '/bin/bash') {
           sh '''#! /bin/bash
 
-KUBECONFIG="--kubeconfig /jenkins-config/jenkins-config"
-
-GIT_DIFF="$(git diff --name-only ${GIT_COMMIT} ${GIT_PREVIOUS_COMMIT})"
-
-echo -e "GIT_DIFF\\n${GIT_DIFF}"
-
 git clone -b devel https://github.com/esgf-compute/charts
 
 cd charts/
@@ -57,19 +51,13 @@ helm ${KUBECONFIG} dependency update compute/
 
 conda install -c conda-forge ruamel.yaml
 
-python scripts/update_config.py configs/development.yaml nginx ${GIT_COMMIT:0:8}
-
-python scripts/update_config.py configs/production-ci.yaml nginx ${GIT_COMMIT:0:8}
-
-helm ${KUBECONFIG} upgrade ${DEV_RELEASE_NAME} compute/ --reuse-values --set nginx.imageTag=${GIT_COMMIT:0:8} --wait --timeout 300
+python scripts/update_config.py compute/values.yaml nginx ${GIT_COMMIT:0:8}
 
 git config user.email ${GIT_EMAIL}
 
 git config user.name ${GIT_NAME}
 
-git add configs/development.yaml
-
-git add configs/production-ci.yaml
+git add compute/values.yaml
 
 git commit -m "Updates imageTag to ${GIT_COMMIT:0:8}"
 
