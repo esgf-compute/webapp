@@ -43,12 +43,6 @@ git clone -b devel https://github.com/esgf-compute/charts
 
 cd charts/
 
-helm ${KUBECONFIG} init --client-only
-
-helm repo add --ca-file /ssl/llnl.ca.pem stable https://kubernetes-charts.storage.googleapis.com/
-
-helm ${KUBECONFIG} dependency update compute/
-
 conda install -c conda-forge ruamel.yaml
 
 python scripts/update_config.py compute/values.yaml nginx ${GIT_COMMIT:0:8}
