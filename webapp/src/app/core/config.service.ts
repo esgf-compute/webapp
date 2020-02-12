@@ -17,7 +17,7 @@ export class ConfigService {
   userJobPath = `${this.basePath}/user/jobs`;
   configurePath = `${this.basePath}/configure`;
 
-  serverPath = 'https://nimbus16.llnl.gov:8443';
+  serverPath = '';
 
   // WPS entrypoint
   wpsPath = `${this.serverPath}/wps/`;
