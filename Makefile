@@ -16,6 +16,8 @@ BUILD = docker run -it --rm \
 					-v ${HOME}/.docker:/root/.docker \
 					--entrypoint /bin/sh \
 					moby/buildkit:master
+else
+BUILD = $(SHELL)
 endif
 
 webapp:
