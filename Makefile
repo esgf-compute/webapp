@@ -1,7 +1,7 @@
 .PHONY: webapp
 
 TAG = $(shell git rev-parse --short HEAD)
-IMAGE = $(if $(REGISTRY),$(REGISTRY)/)webapp
+IMAGE = $(if $(REGISTRY),$(REGISTRY)/)compute-webapp
 
 OUTPUT = --output type=image,name=$(IMAGE):$(TAG),push=true
 
