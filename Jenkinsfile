@@ -10,13 +10,7 @@ pipeline {
       }
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
-          sh '''buildctl-daemonless.sh build \\
-  --frontend dockerfile.v0 \\
-  --local context=${PWD} \\
-  --local dockerfile=${PWD} \\
-  --output type=image,name=${OUTPUT_REGISTRY}/compute-webapp:${GIT_COMMIT:0:8},push=true \\
-  --export-cache type=registry,ref=${OUTPUT_REGISTRY}/compute-webapp:cache \\
-  --import-cache type=registry,ref=${OUTPUT_REGISTRY}/compute-webapp:cache'''
+          sh 'make webapp REGISTRY=${OUTPUT_REGISTRY}'
         }
 
       }
@@ -42,8 +36,6 @@ pipeline {
 git clone -b devel https://github.com/esgf-compute/charts
 
 cd charts/
-
-conda install -c conda-forge ruamel.yaml
 
 python scripts/update_config.py compute/values.yaml nginx ${GIT_COMMIT:0:8}
 
