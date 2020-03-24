@@ -10,7 +10,9 @@ pipeline {
       }
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
-          sh 'make webapp REGISTRY=${OUTPUT_REGISTRY}'
+          sh '''#! /bin/sh 
+
+make webapp REGISTRY=${OUTPUT_REGISTRY}'''
         }
 
       }
