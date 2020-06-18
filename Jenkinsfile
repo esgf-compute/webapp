@@ -12,7 +12,38 @@ pipeline {
         container(name: 'buildkit', shell: '/bin/sh') {
           sh '''#! /bin/sh 
 
-make webapp REGISTRY=${OUTPUT_REGISTRY}'''
+TAG=${GIT_COMMIT:0:8}
+
+make webapp \\
+ REGISTRY=${OUTPUT_REGISTRY} \\
+ TAG=${TAG}
+
+echo -e "webapp:\\n  imageTag: ${TAG}\\n" > update_webapp.yaml'''
+          stash(name: 'update_webapp.yaml', includes: 'update_webapp.yaml')
+        }
+
+      }
+    }
+
+    stage('Deploy Dev') {
+      agent {
+        node {
+          label 'jenkins-helm'
+        }
+
+      }
+      steps {
+        container(name: 'helm', shell: '/bin/bash') {
+          ws(dir: 'work') {
+            unstash 'update_webapp.yaml'
+            sh '''#! /bin/bash
+
+git clone https://github.com/esgf-compute/charts
+
+helm3 upgrade ${DEV_RELEASE_NAME} charts/compute --reuse-values -f update_webapp.yaml --wait --timeout 2m
+'''
+          }
+
         }
 
       }
