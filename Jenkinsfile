@@ -40,8 +40,11 @@ echo -e "webapp:\\n  imageTag: ${TAG}\\n" > update_webapp.yaml'''
 
 git clone https://github.com/esgf-compute/charts
 
-helm3 upgrade ${DEV_RELEASE_NAME} charts/compute --reuse-values -f update_webapp.yaml --wait --timeout 2m
-'''
+HELM_ARGS="--reuse-values -f update_webapp.yaml --wait --timeout 2m"
+
+helm3 upgrade ${DEV_RELEASE_NAME} charts/compute ${HELM_ARGS} | exit 0
+
+helm3 status ${DEV_RELEASE_NAME}'''
           }
 
         }
