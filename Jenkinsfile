@@ -33,7 +33,7 @@ echo -e "webapp:\\n  imageTag: ${TAG}\\n" > update_webapp.yaml'''
 
       }
       when {
-        branch '*'
+        branch 'devel'
       }
       environment {
         GH = credentials('ae3dd8dc-817a-409b-90b9-6459fb524afc')
@@ -89,7 +89,7 @@ git push https://${GH_USR}:${GH_PSW}@github.com/esgf-compute/charts'''
 
       }
       when {
-        branch '*'
+        branch 'master'
       }
       environment {
         GH = credentials('ae3dd8dc-817a-409b-90b9-6459fb524afc')
