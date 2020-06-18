@@ -38,6 +38,8 @@ echo -e "webapp:\\n  imageTag: ${TAG}\\n" > update_webapp.yaml'''
             unstash 'update_webapp.yaml'
             sh '''#! /bin/bash
 
+cat update_webapp.yaml
+
 git clone https://github.com/esgf-compute/charts
 
 HELM_ARGS="--reuse-values -f update_webapp.yaml --wait --timeout 2m"
