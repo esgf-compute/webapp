@@ -32,6 +32,12 @@ echo -e "webapp:\\n  imageTag: ${TAG}\\n" > update_webapp.yaml'''
         }
 
       }
+      when {
+        branch '*'
+      }
+      environment {
+        GH = credentials('ae3dd8dc-817a-409b-90b9-6459fb524afc')
+      }
       steps {
         container(name: 'helm', shell: '/bin/bash') {
           ws(dir: 'work') {
@@ -46,7 +52,29 @@ HELM_ARGS="--reuse-values -f update_webapp.yaml --wait --timeout 2m"
 
 helm3 upgrade ${DEV_RELEASE_NAME} charts/compute ${HELM_ARGS} | exit 0
 
-helm3 status ${DEV_RELEASE_NAME}'''
+helm3 status ${DEV_RELEASE_NAME}
+
+python charts/scripts/merge.py update_webapp.yaml charts/development.yaml
+
+cd charts/
+
+git status
+
+git config user.email ${GIT_EMAIL}
+
+git config user.name ${GIT_NAME}
+
+git add development.yaml
+
+git status
+
+git commit -m "Updates image tag."
+
+git push https://${GH_USR}:${GH_PSW}@github.com/esgf-compute/charts'''
+            sh '''#! /bin/bash
+
+ls -la'''
+            archiveArtifacts(artifacts: 'update_webapp.yaml', fingerprint: true, allowEmptyArchive: true)
           }
 
         }
