@@ -18,7 +18,7 @@ make webapp \\
  REGISTRY=${OUTPUT_REGISTRY} \\
  TAG=${TAG}
 
-echo -e "webapp:\\n  imageTag: ${TAG}\\n" > update_webapp.yaml'''
+echo -e "nginx:\\n  imageTag: ${TAG}\\n" > update_webapp.yaml'''
           stash(name: 'update_webapp.yaml', includes: 'update_webapp.yaml')
         }
 
