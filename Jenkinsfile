@@ -50,9 +50,9 @@ git clone https://github.com/esgf-compute/charts
 
 HELM_ARGS="--reuse-values -f update_webapp.yaml --wait --timeout 2m"
 
-helm3 upgrade ${DEV_RELEASE_NAME} charts/compute ${HELM_ARGS} | exit 0
+helm upgrade ${DEV_RELEASE_NAME} charts/compute ${HELM_ARGS} | exit 0
 
-helm3 status ${DEV_RELEASE_NAME}'''
+helm status ${DEV_RELEASE_NAME}'''
             sh '''#! /bin/bash
 
 
@@ -106,9 +106,9 @@ git clone https://github.com/esgf-compute/charts
 
 HELM_ARGS="--reuse-values -f update_webapp.yaml --atomic"
 
-helm3 upgrade ${PROD_RELEASE_NAME} charts/compute ${HELM_ARGS}
+helm upgrade ${PROD_RELEASE_NAME} charts/compute ${HELM_ARGS}
 
-helm3 status ${PROD_RELEASE_NAME}'''
+helm status ${PROD_RELEASE_NAME}'''
             sh '''#! /bin/bash
 
 
