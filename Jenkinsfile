@@ -11,14 +11,15 @@ pipeline {
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
           sh '''#! /bin/sh 
+
 TAG=$(cat VERSION)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
-REGISTRY=${PUBLIC_REGISTRY}
+REGISTRY=${REGISTRY_PUBLIC}
 
 if [[ ${GIT_BRANCH} == "devel" ]]
 then
 TAG="${TAG}_${BUILD_NUMBER}"
-REGISTRY=${PRIVATE_REGISTRY}
+REGISTRY=${REGISTRY_PRIVATE}
 fi
 
 make webapp \\
@@ -62,7 +63,6 @@ HELM_ARGS="--reuse-values -f update_webapp.yaml --wait --timeout 2m"
 helm upgrade ${DEV_RELEASE_NAME} charts/compute ${HELM_ARGS}
 
 helm status ${DEV_RELEASE_NAME}'''
-
             sh '''#! /bin/bash
 python charts/scripts/merge.py update_webapp.yaml charts/development.yaml
 
@@ -81,7 +81,6 @@ git status
 git commit -m "Updates image tag."
 
 git push https://${GH_USR}:${GH_PSW}@github.com/esgf-compute/charts'''
-
             archiveArtifacts(artifacts: 'update_webapp.yaml', fingerprint: true, allowEmptyArchive: true)
           }
 
@@ -117,7 +116,6 @@ HELM_ARGS="--reuse-values -f update_webapp.yaml --atomic"
 helm upgrade ${PROD_RELEASE_NAME} charts/compute ${HELM_ARGS}
 
 helm status ${PROD_RELEASE_NAME}'''
-
             sh '''#! /bin/bash
 python charts/scripts/merge.py update_webapp.yaml charts/compute/values.yaml
 
