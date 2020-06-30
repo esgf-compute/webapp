@@ -130,31 +130,37 @@ fi'''
             }
             archiveArtifacts(artifacts: 'update_webapp.yaml', fingerprint: true, allowEmptyArchive: true)
             sh '''#! /bin/bash
-cat update_webapp.yaml
+if [[ -e "update_webapp.yaml" ]]
+then
+  cat update_webapp.yaml
 
-git clone https://github.com/esgf-compute/charts
+  git clone https://github.com/esgf-compute/charts
 
-cd charts/
+  cd charts/
 
-make upgrade TIMEOUT=8m'''
+  make upgrade TIMEOUT=8m
+fi'''
             sh '''#! /bin/bash
-cd charts/
+if [[ -e "update_webapp.yaml" ]]
+then
+  cd charts/
 
-python scripts/merge.py update_webapp.yaml compute/values.yaml
+  python scripts/merge.py update_webapp.yaml compute/values.yaml
 
-git status
+  git status
 
-git config user.email ${GIT_EMAIL}
+  git config user.email ${GIT_EMAIL}
 
-git config user.name ${GIT_NAME}
+  git config user.name ${GIT_NAME}
 
-git add compute/values.yaml
+  git add compute/values.yaml
 
-git status
+  git status
 
-git commit -m "Updates image tag."
+  git commit -m "Updates image tag."
 
-git push https://${GH_USR}:${GH_PSW}@github.com/esgf-compute/charts'''
+  git push https://${GH_USR}:${GH_PSW}@github.com/esgf-compute/charts
+fi'''
           }
 
         }
