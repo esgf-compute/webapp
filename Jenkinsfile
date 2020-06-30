@@ -1,5 +1,8 @@
 pipeline {
   agent none
+  parameters {
+    booleanParam(name: 'FORCE_DEPLOY', defaultValue: false, description: 'Force deployment')
+  }
   environment {
     REGISTRY = "${env.BRANCH_NAME == "master" ? env.REGISTRY_PUBLIC : env.REGISTRY_PRIVATE}"
   }
@@ -29,7 +32,13 @@ pipeline {
 
       }
       when {
-        branch 'devel'
+        anyOf {
+          branch 'devel'
+          allOf {
+            branch 'devel'
+            expression { return params.FORCE_DEPLOY }
+          } 
+        }
       }
       environment {
         GH = credentials('ae3dd8dc-817a-409b-90b9-6459fb524afc')
@@ -90,7 +99,14 @@ fi'''
 
       }
       when {
-        branch 'master'
+      when {
+        anyOf {
+          branch 'master'
+          allOf {
+            branch 'master'
+            expression { return params.FORCE_DEPLOY }
+          } 
+        }
       }
       environment {
         GH = credentials('ae3dd8dc-817a-409b-90b9-6459fb524afc')
