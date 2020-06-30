@@ -102,7 +102,6 @@ fi'''
 
       }
       when {
-      when {
         anyOf {
           branch 'master'
           allOf {
