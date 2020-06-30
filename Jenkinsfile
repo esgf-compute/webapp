@@ -14,6 +14,9 @@ pipeline {
         }
 
       }
+      when {
+        changeset "webapp/**/*"
+      }
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
           sh 'make webapp CACHE_PATH=/nfs/buildkit-cache'
