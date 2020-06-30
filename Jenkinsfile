@@ -44,6 +44,8 @@ pipeline {
       environment {
         GH = credentials('ae3dd8dc-817a-409b-90b9-6459fb524afc')
         RELEASE = "${env.WPS_RELEASE_DEV}"
+        KUBE_CONTEXT = "development"
+        CA_FILE = "/ssl/llnl.ca.pem"
       }
       steps {
         container(name: 'helm', shell: '/bin/bash') {
@@ -64,7 +66,7 @@ then
 
   cd charts/
 
-  make upgrade FILES="--values ../update_webapp.yaml" CA_FILE=/ssl/llnl.ca.pem TIMEOUT=8m
+  make upgrade FILES="--values ../update_webapp.yaml" TIMEOUT=8m
 fi'''
             sh '''#! /bin/bash
 if [[ -e "update_webapp.yaml" ]]
@@ -118,6 +120,8 @@ fi'''
       environment {
         GH = credentials('ae3dd8dc-817a-409b-90b9-6459fb524afc')
         RELEASE = "${env.WPS_RELEASE_PROD}"
+        KUBE_CONTEXT = "production"
+        CA_FILE = "/ssl/llnl.ca.pem"
       }
       steps {
         container(name: 'helm', shell: '/bin/bash') {
@@ -135,7 +139,7 @@ git clone https://github.com/esgf-compute/charts
 
 cd charts/
 
-make upgrade CA_FILE=/ssl/llnl.ca.pem TIMEOUT=8m'''
+make upgrade TIMEOUT=8m'''
             sh '''#! /bin/bash
 cd charts/
 
