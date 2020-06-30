@@ -9,7 +9,10 @@ pipeline {
 
       }
       when {
-        changeset 'webapp/**/*'
+        anyOf {
+          branch 'master'
+          branch 'devel'
+        }
       }
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
