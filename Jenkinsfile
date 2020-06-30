@@ -122,7 +122,11 @@ fi'''
       steps {
         container(name: 'helm', shell: '/bin/bash') {
           ws(dir: 'work') {
-            unstash 'update_webapp.yaml'
+            script {
+              try {
+                unstash 'update_webapp.yaml'
+              } catch (err) { }
+            }
             archiveArtifacts(artifacts: 'update_webapp.yaml', fingerprint: true, allowEmptyArchive: true)
             sh '''#! /bin/bash
 cat update_webapp.yaml
