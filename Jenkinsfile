@@ -52,29 +52,29 @@ then
   cd charts/
 
   make upgrade FILES="--values ../update_webapp.yaml" CA_FILE=/ssl/llnl.ca.pem TIMEOUT=8m
-fi
-''' 
+fi''' 
 
             sh '''#! /bin/bash
 if [[ -e "update_webapp.yaml" ]]
 then
-cd charts/
+  cd charts/
 
-python scripts/merge.py ../update_webapp.yaml development.yaml
+  python scripts/merge.py ../update_webapp.yaml development.yaml
 
-git status
+  git status
 
-git config user.email ${GIT_EMAIL}
+  git config user.email ${GIT_EMAIL}
 
-git config user.name ${GIT_NAME}
+  git config user.name ${GIT_NAME}
 
-git add development.yaml
+  git add development.yaml
 
-git status
+  git status
 
-git commit -m "Updates image tag."
+  git commit -m "Updates image tag."
 
-git push https://${GH_USR}:${GH_PSW}@github.com/esgf-compute/charts'''
+  git push https://${GH_USR}:${GH_PSW}@github.com/esgf-compute/charts
+fi'''
           }
 
         }
