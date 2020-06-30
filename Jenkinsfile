@@ -1,5 +1,8 @@
 pipeline {
   agent none
+  environment {
+    REGISTRY = "${env.BRANCH_NAME == "master" ? env.REGISTRY_PUBLIC : env.REGISTRY_PRIVATE}"
+  }
   stages {
     stage('Build') {
       agent {
@@ -10,25 +13,8 @@ pipeline {
       }
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
-          sh '''#! /bin/sh 
+          sh 'make webapp CACHE_PATH=/nfs/buildkit-cache'
 
-TAG=$(cat VERSION)
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
-REGISTRY=${REGISTRY_PUBLIC}
-
-if [[ ${GIT_BRANCH} == "devel" ]]
-then
-TAG="${TAG}_${BUILD_NUMBER}"
-REGISTRY=${REGISTRY_PRIVATE}
-fi
-
-make webapp \\
- REGISTRY=${REGISTRY} \\
- CACHE_PATH=/nfs/buildkit-cache \\
- TAG=${TAG} \\
- SHELL=/bin/sh
-
-echo -e "nginx:\\n  imageTag: ${TAG}\\n" > update_webapp.yaml'''
           stash(name: 'update_webapp.yaml', includes: 'update_webapp.yaml')
         }
 
@@ -47,26 +33,34 @@ echo -e "nginx:\\n  imageTag: ${TAG}\\n" > update_webapp.yaml'''
       }
       environment {
         GH = credentials('ae3dd8dc-817a-409b-90b9-6459fb524afc')
+        RELEASE = "${env.WPS_RELEASE_DEV}"
       }
       steps {
         container(name: 'helm', shell: '/bin/bash') {
           ws(dir: 'work') {
             unstash 'update_webapp.yaml'
+
+            archiveArtifacts(artifacts: 'update_webapp.yaml', fingerprint: true, allowEmptyArchive: true)
+            
             sh '''#! /bin/bash
+if [[ -e "update_webapp.yaml" ]]
+then
+  cat update_webapp.yaml
 
-cat update_webapp.yaml
+  git clone https://github.com/esgf-compute/charts
 
-git clone https://github.com/esgf-compute/charts
+  cd charts/
 
-HELM_ARGS="--reuse-values -f update_webapp.yaml --wait --timeout 2m"
+  make upgrade FILES="--values ../update_webapp.yaml" CA_FILE=/ssl/llnl.ca.pem TIMEOUT=8m
+fi
+''' 
 
-helm upgrade ${DEV_RELEASE_NAME} charts/compute ${HELM_ARGS}
-
-helm status ${DEV_RELEASE_NAME}'''
             sh '''#! /bin/bash
-python charts/scripts/merge.py update_webapp.yaml charts/development.yaml
-
+if [[ -e "update_webapp.yaml" ]]
+then
 cd charts/
+
+python scripts/merge.py ../update_webapp.yaml development.yaml
 
 git status
 
@@ -81,7 +75,6 @@ git status
 git commit -m "Updates image tag."
 
 git push https://${GH_USR}:${GH_PSW}@github.com/esgf-compute/charts'''
-            archiveArtifacts(artifacts: 'update_webapp.yaml', fingerprint: true, allowEmptyArchive: true)
           }
 
         }

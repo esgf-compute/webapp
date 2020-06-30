@@ -1,18 +1,23 @@
 .PHONY: webapp
 
-TAG = $(shell git rev-parse --short HEAD)
-IMAGE = $(if $(REGISTRY),$(REGISTRY)/)compute-webapp
+CACHE_PATH ?= $(PWD)/cache
 
-OUTPUT = --output type=image,name=$(IMAGE):$(TAG),push=true
+GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+GIT_COMMIT := $(shell git rev-parse --short HEAD)
+VERSION := $(shell cat VERSION)
 
-CACHE = --export-cache type=local,dest=/cache,mode=max \
-				--import-cache type=local,src=/cache
+IMAGE := $(if $(REGISTRY),$(REGISTRY)/)compute-webapp
+TAG := $(or $(if $(findstring $(GIT_BRANCH),master),$(VERSION)), $(VERSION)_$(GIT_BRANCH)_$(GIT_COMMIT))
+
+OUTPUT := --output type=image,name=$(IMAGE):$(TAG),push=true
+
+CACHE := --export-cache type=local,dest=$(CACHE_PATH),mode=max \
+				--import-cache type=local,src=$(CACHE_PATH)
 
 ifeq ($(shell which buildctl-daemonless.sh),)
 BUILD = docker run -it --rm \
 					--privileged \
 					-v ${PWD}:/build -w /build \
-					-v ${PWD}/cache:/cache \
 					-v ${HOME}/.docker:/root/.docker \
 					--entrypoint /bin/sh \
 					moby/buildkit:master
@@ -22,3 +27,5 @@ endif
 
 webapp:
 	$(BUILD) build.sh . $(CACHE) $(OUTPUT)
+
+	echo -e "nginx:\n  imageTag: $(TAG)" > update_webapp.yaml
