@@ -8,12 +8,6 @@ pipeline {
         }
 
       }
-      when {
-        anyOf {
-          branch 'master'
-          branch 'devel'
-        }
-      }
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
           sh 'make webapp CACHE_PATH=/nfs/buildkit-cache'
