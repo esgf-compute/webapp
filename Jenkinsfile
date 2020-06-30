@@ -94,25 +94,28 @@ fi'''
       }
       environment {
         GH = credentials('ae3dd8dc-817a-409b-90b9-6459fb524afc')
+        RELEASE = "${env.WPS_RELEASE_PROD}"
       }
       steps {
         container(name: 'helm', shell: '/bin/bash') {
           ws(dir: 'work') {
             unstash 'update_webapp.yaml'
+
+            archiveArtifacts(artifacts: 'update_webapp.yaml', fingerprint: true, allowEmptyArchive: true)
+
             sh '''#! /bin/bash
 cat update_webapp.yaml
 
 git clone https://github.com/esgf-compute/charts
 
-HELM_ARGS="--reuse-values -f update_webapp.yaml --atomic"
-
-helm upgrade ${PROD_RELEASE_NAME} charts/compute ${HELM_ARGS}
-
-helm status ${PROD_RELEASE_NAME}'''
-            sh '''#! /bin/bash
-python charts/scripts/merge.py update_webapp.yaml charts/compute/values.yaml
-
 cd charts/
+
+make upgrade CA_FILE=/ssl/llnl.ca.pem TIMEOUT=8m'''
+
+            sh '''#! /bin/bash
+cd charts/
+
+python scripts/merge.py update_webapp.yaml compute/values.yaml
 
 git status
 
@@ -127,7 +130,6 @@ git status
 git commit -m "Updates image tag."
 
 git push https://${GH_USR}:${GH_PSW}@github.com/esgf-compute/charts'''
-            archiveArtifacts(artifacts: 'update_webapp.yaml', fingerprint: true, allowEmptyArchive: true)
           }
 
         }
