@@ -1,6 +1,8 @@
 .PHONY: webapp
 
 CACHE_PATH ?= $(PWD)/cache
+# Keep up to 1GB
+BUILDCTL_KEEP_STORAGE ?= 10240
 
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 GIT_COMMIT := $(shell git rev-parse --short HEAD)
@@ -24,6 +26,12 @@ BUILD = docker run -it --rm \
 else
 BUILD = $(SHELL)
 endif
+
+prune-cache:
+	$(BUILD) /usr/bin/buildctl-daemonless.sh du
+
+	$(BUILD) /usr/bin/buildctl-daemonless.sh prune \
+		--all --keep-storage $(BUILDCTL_KEEP_STORAGE)
 
 webapp:
 	$(BUILD) build.sh . $(CACHE) $(OUTPUT)
