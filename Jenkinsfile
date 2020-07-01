@@ -41,8 +41,8 @@ pipeline {
       environment {
         GH = credentials('ae3dd8dc-817a-409b-90b9-6459fb524afc')
         RELEASE = "${env.WPS_RELEASE_DEV}"
-        KUBE_CONTEXT = "development"
-        CA_FILE = "/ssl/llnl.ca.pem"
+        KUBE_CONTEXT = 'development'
+        CA_FILE = '/ssl/llnl.ca.pem'
       }
       steps {
         container(name: 'helm', shell: '/bin/bash') {
@@ -65,7 +65,8 @@ then
 
   make upgrade FILES="--values ../update_webapp.yaml" TIMEOUT=8m
 fi'''
-            sh '''#! /bin/bash
+            lock(resource: 'esgf-compute_charts') {
+              sh '''#! /bin/bash
 if [[ -e "update_webapp.yaml" ]]
 then
   cd charts/
@@ -86,6 +87,8 @@ then
 
   git push https://${GH_USR}:${GH_PSW}@github.com/esgf-compute/charts
 fi'''
+            }
+
           }
 
         }
@@ -117,8 +120,8 @@ fi'''
       environment {
         GH = credentials('ae3dd8dc-817a-409b-90b9-6459fb524afc')
         RELEASE = "${env.WPS_RELEASE_PROD}"
-        KUBE_CONTEXT = "production"
-        CA_FILE = "/ssl/llnl.ca.pem"
+        KUBE_CONTEXT = 'production'
+        CA_FILE = '/ssl/llnl.ca.pem'
       }
       steps {
         container(name: 'helm', shell: '/bin/bash') {
@@ -128,6 +131,7 @@ fi'''
                 unstash 'update_webapp.yaml'
               } catch (err) { }
             }
+
             archiveArtifacts(artifacts: 'update_webapp.yaml', fingerprint: true, allowEmptyArchive: true)
             sh '''#! /bin/bash
 if [[ -e "update_webapp.yaml" ]]
@@ -140,7 +144,8 @@ then
 
   make upgrade TIMEOUT=8m
 fi'''
-            sh '''#! /bin/bash
+            lock(resource: 'esgf-compute_charts') {
+              sh '''#! /bin/bash
 if [[ -e "update_webapp.yaml" ]]
 then
   cd charts/
@@ -161,6 +166,8 @@ then
 
   git push https://${GH_USR}:${GH_PSW}@github.com/esgf-compute/charts
 fi'''
+            }
+
           }
 
         }
