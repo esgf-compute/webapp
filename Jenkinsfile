@@ -10,11 +10,11 @@ pipeline {
       }
       steps {
         container(name: 'buildkit', shell: '/bin/sh') {
-          lock(label: 'buildkit-cache', quantity: 1) {
+          lock(resource: null, label: 'buildkit-cache', quantity: 1) {
             sh 'make webapp CACHE_PATH=/nfs/buildkit-cache'
           }
           stash(name: 'update_webapp.yaml', includes: 'update_webapp.yaml')
-          lock(label: 'buildkit-cache') {
+          lock(resource: null, label: 'buildkit-cache') {
             sh 'make prune-cache'
           } 
         }
