@@ -145,7 +145,7 @@ if [[ -e "update_webapp.yaml" ]]
 then
   cd charts/
 
-  python scripts/merge.py update_webapp.yaml compute/values.yaml
+  python scripts/merge.py ../update_webapp.yaml compute/values.yaml
 
   git status
 
